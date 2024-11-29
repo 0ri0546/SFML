@@ -65,9 +65,6 @@ public:
             meubleShape.setPosition(pos);
         }
     }
-   
-
-
     RectangleShape getRectangleShape() const {
         sf::RectangleShape rect(sf::Vector2f(largeur, hauteur));
         rect.setPosition(x, y);
@@ -124,7 +121,6 @@ private:
                         input += static_cast<char>(event.text.unicode);
                         textInput.setString(prompt + " " + input);
                     }
-                    
                 }
                 if (event.type == Event::KeyPressed && event.key.code == Keyboard::Enter) {
                     
@@ -232,7 +228,6 @@ private:
                     }
                 }
             }
-
         }
     }
 
@@ -350,7 +345,6 @@ public:
     }
 
     int boucleDeJeu() {
-        
         std::vector<sf::RectangleShape> rectShapes;
         menu();  
         
@@ -364,7 +358,6 @@ public:
         music.setLoop(true);
         
         while (window.isOpen()) {
-            
             while (window.pollEvent(event)) {
                 if (event.type == Event::Closed) {
                     window.close();
@@ -415,8 +408,6 @@ public:
                                     noms.push_back(nomMeuble);
                                     enDeplacement = false;
                                 }
-                                
-
                             }
                         }
 
@@ -424,7 +415,6 @@ public:
                         if (pos.y < 0) pos.y = 0;
                         if (pos.x + size.x > WIDTH) pos.x = WIDTH - size.x;
                         if (pos.y + size.y > HEIGHT) pos.y = HEIGHT - size.y;
-
 
                         newMeuble.setPosition(pos);
                         nomMeuble.setPosition(Vector2f(pos.x, pos.y + size.y));
@@ -454,12 +444,10 @@ public:
                         sound.play();
                         afficherMenuMeubles();
                     }
-
                     if (afficherMenu) {
                         sound.play();
                         gestionMenuMeubles();
                     }
-                    
                 }
                 if (menuAjouterMeuble)
                 {
@@ -512,9 +500,7 @@ public:
                             noms.erase(noms.begin() + nom - 1);
                         }
                         supprimerMeubleBool = false;
-                    }
-
-                    
+                    }  
                 }
             }
             window.clear();
@@ -544,7 +530,6 @@ public:
                         window.draw(newMeuble); 
                         window.draw(nomMeuble);
                     }
-
                 }
                 if (afficherMenu) {
                     sound.play();
@@ -582,7 +567,6 @@ int main() {
 
     Jeu jeu;
     jeu.boucleDeJeu();
-    
     
     return 0;
 }
