@@ -55,8 +55,7 @@ public:
     RectangleShape& getShape() { return meubleShape; }
     string getNom() const { return nom; } 
 
-    // deplacements du meuble
-    void deplacerMeuble() { //demander quel meuble
+    void deplacerMeuble() { 
         if (event.type == Event::KeyPressed) {
             Vector2f pos = meubleShape.getPosition();
             if (event.key.code == Keyboard::Up) pos.y -= 10;
@@ -80,7 +79,7 @@ public:
 class Jeu {
 private:
     Piece piece;
-    RectangleShape rectanglePiece, rectangleMenu, rectangleMenuAjouter; // piece principale
+    RectangleShape rectanglePiece, rectangleMenu, rectangleMenuAjouter;
     vector<Text> noms;
     vector<RectangleShape> rectShapes;
     Text textMenu, prop1, prop2, menuTitle, option1, option2, option3, option4, option5, creerTextAjouter, afficherMeublesText, nomMeuble;
@@ -120,7 +119,6 @@ private:
                 if (event.type == Event::TextEntered && event.text.unicode < 128) {
                     if (event.text.unicode == '\b' && !input.empty()) {
                         input.pop_back();
-                        //retirer dernier caractere de input
                     }
                     else if (event.text.unicode != '\b') {
                         input += static_cast<char>(event.text.unicode);
@@ -171,7 +169,6 @@ private:
                     char enteredChar = static_cast<char>(event.text.unicode);
                     if (enteredChar == '\b' && !nom.empty()) { 
                         nom.pop_back();
-                        //retirer dernier caractere de input
                     }
                     else if (enteredChar != '\b') {
                         nom += enteredChar;
@@ -214,14 +211,13 @@ private:
                 }
                 if (event.type == Event::TextEntered) {
                     char enteredChar = static_cast<char>(event.text.unicode);
-                    if (enteredChar == '\b' && !input.empty()) { //backspace
+                    if (enteredChar == '\b' && !input.empty()) {
                         input.pop_back();
                         break;
-                        //retirer dernier caractere de input
                     }
                    
                     else if (enteredChar != '\b') {
-                        if (isdigit(enteredChar)) { // n'accepte que les nombres
+                        if (isdigit(enteredChar)) {
                             input += enteredChar;
                         }
                     }
@@ -258,12 +254,11 @@ private:
     }
 
     void afficherMeubles() {
-        cout << "affichermeuble" << endl;
         creerRectangle(rectBleu, { 700, 500 }, Color::Blue, Color::Black, 3, { WIDTH / 2 - 350, HEIGHT / 2 - 250 });
         affichageMeubles = true;
     }
 
-    void supprimerMeuble() { // à vérifier (ajouter les interfaces menu générales)
+    void supprimerMeuble() {
         supprimerMeubleBool = true;
     }
 
@@ -284,7 +279,6 @@ private:
         creerRectangle(checkBox4, { 30, 30 }, Color::White, Color::Black, 2, { 100, 345 });
         creerRectangle(checkBox5, { 30, 30 }, Color::White, Color::Black, 2, { 100, 395 });
         
-
         creerRectangle(styleMenu1, { 650, 40 }, Color::Cyan, Color::Black, 3, { WIDTH / 2 - 325, 190 });
         creerRectangle(styleMenu2, { 650, 40 }, Color::Cyan, Color::Black, 3, { WIDTH / 2 - 325, 240 });
         creerRectangle(styleMenu3, { 650, 40 }, Color::Cyan, Color::Black, 3, { WIDTH / 2 - 325, 290 });
@@ -301,26 +295,26 @@ private:
         if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
             Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
 
-            if (checkBox1.getGlobalBounds().contains(mousePos)) { // add un meuble
+            if (checkBox1.getGlobalBounds().contains(mousePos)) {
                 sound.play();
                 afficherMenu = false;
                 ajouterMeuble();
             }
-            if (checkBox2M.getGlobalBounds().contains(mousePos)) { // deplacer un meuble
+            if (checkBox2M.getGlobalBounds().contains(mousePos)) {
                 sound.play();
                 afficherMenu = false;
                 supprimerMeuble();
             }
-            if (checkBox3.getGlobalBounds().contains(mousePos)) { // suppr un meuble
+            if (checkBox3.getGlobalBounds().contains(mousePos)) {
                 sound.play();
                 afficherMenu = false;
                afficherMeubles();
             }
-            if (checkBox4.getGlobalBounds().contains(mousePos)) { // retour
+            if (checkBox4.getGlobalBounds().contains(mousePos)) {
                 sound.play();
                 afficherMenu = false;
             }
-            if (checkBox5.getGlobalBounds().contains(mousePos)) { // Quitter
+            if (checkBox5.getGlobalBounds().contains(mousePos)) {
                 sound.play();
                 window.close();
             }
@@ -330,7 +324,7 @@ private:
 public:
     int menu() {
         if (!texture.loadFromFile("image.png")) {
-            return -1; // Erreur si le fichier est introuvable
+            return -1;
         }
         sprite.setTexture(texture);
         sf::Vector2f targetSize(700, 500);
@@ -357,7 +351,7 @@ public:
 
     int boucleDeJeu() {
         
-        std::vector<sf::RectangleShape> rectShapes; //vecteur RectangleShape
+        std::vector<sf::RectangleShape> rectShapes;
         menu();  
         
         if (!buffer.loadFromFile("sound.wav"))
@@ -384,18 +378,13 @@ public:
                         bool collisionDetected = false;
                         Vector2f piecePos = rectanglePiece.getPosition();
                         Vector2f pieceSize = rectanglePiece.getSize();
-
                         if (event.key.code == Keyboard::Up) pos.y -= 5;
                         if (event.key.code == Keyboard::Down) pos.y += 5;
                         if (event.key.code == Keyboard::Left) pos.x -= 5;
                         if (event.key.code == Keyboard::Right) pos.x += 5;
-
-
                         for (auto& autremeuble : rectShapes) {
                             Vector2f otherPos = autremeuble.getPosition();
                             Vector2f otherSize = autremeuble.getSize();
-
-                            // verif de la collision (si les rectangles se chevauchent)
                             if (pos.x < otherPos.x + otherSize.x &&
                                 pos.x + size.x > otherPos.x &&
                                 pos.y < otherPos.y + otherSize.y &&
@@ -408,9 +397,7 @@ public:
                             pos.x + size.x > piecePos.x + pieceSize.x ||
                             pos.y + size.y > piecePos.y + pieceSize.y) {
                             newMeuble.setFillColor(Color::Red);
-                            if (event.key.code == Keyboard::L) {
-                                cout << "vous ne pouvez pas placer le meuble ici" << endl;
-                            }
+                            
                         }
                         else {
                             if (collisionDetected) {
@@ -424,15 +411,11 @@ public:
                                 if (!collisionDetected)
                                 {
                                     sound.play();
-                                    cout << "Meuble verrouille a la position actuelle" << endl;
                                     rectShapes.push_back(newMeuble);
                                     noms.push_back(nomMeuble);
                                     enDeplacement = false;
                                 }
-                                else
-                                {
-                                    cout << "vous ne pouvez pas placer le meuble ici" << endl;
-                                }
+                                
 
                             }
                         }
@@ -448,7 +431,7 @@ public:
                     }
                 }
             
-                if (firstMenu) { // Menu principal
+                if (firstMenu) {
                     if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
                         if (checkBox.getGlobalBounds().contains(window.mapPixelToCoords(Mouse::getPosition(window)))) {
                             longueurInt = captureInput("Entrez la longueur (0-600):");
@@ -466,7 +449,7 @@ public:
                         }
                     }
                 }
-                else if (pieceCree) { // Menu des meubles
+                else if (pieceCree) {
                     if (event.type == Event::KeyPressed && event.key.code == Keyboard::M) {
                         sound.play();
                         afficherMenuMeubles();
@@ -483,7 +466,7 @@ public:
                     window.draw(newMeuble);
                     window.draw(nomMeuble);
                 }
-                while (affichageMeubles) // -----------------------------------------------------------------------------------------------------------
+                while (affichageMeubles)
                 {
                     sound.play();
                     window.clear();
@@ -495,8 +478,6 @@ public:
                     }
                     meublesNom += " \n\nappuyez sur R pour quitter";
                     piece.creerText(afficherMeublesText, meublesNom, 30, Color::Black, 150, 190);
-                    cout << "test" << endl;
-                    cout << meublesNom << endl;
                     window.draw(sprite);
                     window.draw(afficherMeublesText);
                     window.display();
@@ -527,7 +508,6 @@ public:
                     {
                         int nom = captureInput("Entrez le numero correspondant : ");
                         if (!rectShapes.empty()) {
-                            cout << "meuble";
                             rectShapes.erase(rectShapes.begin() + nom - 1);
                             noms.erase(noms.begin() + nom - 1);
                         }
@@ -537,8 +517,6 @@ public:
                     
                 }
             }
-
-            // Dessiner la scene
             window.clear();
             if (firstMenu) {
                 sound.play();
@@ -553,8 +531,7 @@ public:
             }
             else {
                 if (pieceCree && !affichageMeubles) {
-                    window.draw(rectanglePiece);  // Afficher la piece
-                    // -----------------------------------------------------------------------------------------------------------
+                    window.draw(rectanglePiece);
                     for (const auto& meuble : rectShapes)
                     {
                         window.draw(meuble);
@@ -563,7 +540,6 @@ public:
                     {
                         window.draw(nom);
                     }
-                    // -----------------------------------------------------------------------------------------------------------
                     if (menuAjouterMeuble) {
                         window.draw(newMeuble); 
                         window.draw(nomMeuble);
@@ -572,7 +548,7 @@ public:
                 }
                 if (afficherMenu) {
                     sound.play();
-                    window.draw(sprite);  // Afficher le menu des meubles
+                    window.draw(sprite);
                     window.draw(styleMenu1);
                     window.draw(styleMenu2);
                     window.draw(styleMenu3);
