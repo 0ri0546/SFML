@@ -81,7 +81,6 @@ class Jeu {
 private:
     Piece piece;
     RectangleShape rectanglePiece, rectangleMenu, rectangleMenuAjouter; // piece principale
-    vector<Meuble> meubles; // liste des meubles
     vector<Text> noms;
     vector<RectangleShape> rectShapes;
     Text textMenu, prop1, prop2, menuTitle, option1, option2, option3, option4, option5, creerTextAjouter, afficherMeublesText, nomMeuble;
@@ -159,7 +158,7 @@ private:
         while (true) {
             window.clear();
             creerRectangle(rectBleu, { 700, 500 }, Color::Blue, Color::Black, 3, { WIDTH / 2 - 350, HEIGHT / 2 - 250 });
-            window.draw(rectangleMenuAjouter);
+            window.draw(rectBleu);
             window.draw(styleMenu1);
             window.draw(prompt);
             input.setString(nom);
@@ -167,7 +166,7 @@ private:
             window.display();
 
             while (window.pollEvent(event)) {
-                if (event.type == Event::Closed) window.close();
+                if (event.type == Event::Closed) window.close(); 
                 if (event.type == Event::TextEntered && event.text.unicode < 128) {
                     char enteredChar = static_cast<char>(event.text.unicode);
                     if (enteredChar == '\b' && !nom.empty()) { 
@@ -243,10 +242,6 @@ private:
 
     Text prompt;
     void ajouterMeuble() {
-        // transformer le vecteur meubles en vecteur RectangleShape
-        for (auto& meuble : meubles) {
-            rectShapes.push_back(meuble.getRectangleShape());
-        }
         //ajouter un meuble
         afficherMenu = false;
         menuAjouterMeuble = true;
@@ -264,36 +259,12 @@ private:
 
     void afficherMeubles() {
         cout << "affichermeuble" << endl;
-        afficherMenu = false;
         creerRectangle(rectBleu, { 700, 500 }, Color::Blue, Color::Black, 3, { WIDTH / 2 - 350, HEIGHT / 2 - 250 });
-        for (auto& meuble : meubles) {
-            rectShapes.push_back(meuble.getRectangleShape());
-        }
-        for (auto& elem : rectShapes) {
-            cout << "les meubles sont : " << elem.getPosition().y << endl;
-        }
-        
         affichageMeubles = true;
     }
 
     void supprimerMeuble() { // à vérifier (ajouter les interfaces menu générales)
-        creerRectangle(rectBleu, { 700, 500 }, Color::Blue, Color::Black, 3, { WIDTH / 2 - 350, HEIGHT / 2 - 250 });
         supprimerMeubleBool = true;
-        if (meubles.empty()) {
-            cout << "non, vide" << endl;
-            return;
-        }
-        else
-        {
-            afficherMeubles();
-            string nom = demanderNom();
-            for (auto& meuble : meubles) {
-                if (meuble.getNom() == nom)
-                {
-                    meubles.erase(meuble);
-                }
-            }l
-        }  
     }
 
     void afficherMenuMeubles() {
@@ -386,10 +357,7 @@ public:
 
     int boucleDeJeu() {
         
-        std::vector<sf::RectangleShape> rectShapes; // trnsformer le vecteur meubles en vecteur RectangleShape
-        for (const auto& meuble : meubles) {
-            rectShapes.push_back(meuble.getRectangleShape());
-        }
+        std::vector<sf::RectangleShape> rectShapes; //vecteur RectangleShape
         menu();  
         
         if (!buffer.loadFromFile("sound.wav"))
@@ -519,12 +487,13 @@ public:
                 {
                     sound.play();
                     window.clear();
-                    string meublesNom = "";
+                    string meublesNom = "Les meubles sont : ";
                     for (auto& nom : noms)
                     {
                         meublesNom += nom.getString();
                         meublesNom += ", ";
                     }
+                    meublesNom += " \n\nappuyez sur R pour quitter";
                     piece.creerText(afficherMeublesText, meublesNom, 30, Color::Black, 150, 190);
                     cout << "test" << endl;
                     cout << meublesNom << endl;
@@ -536,6 +505,37 @@ public:
                         affichageMeubles = false;
                     }
                 } 
+                while (supprimerMeubleBool)
+                {
+                    sound.play();
+                    window.clear();
+                    string meublesNom = "Les meubles sont : ";
+                    int i = 0;
+                    for (auto& nom : noms)
+                    {
+                        i++;
+                        meublesNom += i;
+                        meublesNom += nom.getString();
+                        meublesNom += ", ";
+                    }
+                    meublesNom += " \n\nappuyez sur S pour passer a la suite";
+                    piece.creerText(afficherMeublesText, meublesNom, 30, Color::Black, 150, 190);
+                    window.draw(sprite);
+                    window.draw(afficherMeublesText);
+                    window.display();
+                    if (Keyboard::isKeyPressed(Keyboard::S))
+                    {
+                        int nom = captureInput("Entrez le numero correspondant : ");
+                        if (!rectShapes.empty()) {
+                            cout << "meuble";
+                            rectShapes.erase(rectShapes.begin() + nom - 1);
+                            noms.erase(noms.begin() + nom - 1);
+                        }
+                        supprimerMeubleBool = false;
+                    }
+
+                    
+                }
             }
 
             // Dessiner la scene
